@@ -1,0 +1,29 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+}
+#containerFather {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#container {
+    display: flex;
+    flex-wrap: wrap;
+    border: 3px solid black;
+    width: 40%;
+}
+.divChildGrid {
+    flex: 1 0 calc(100% / var(--number-squares, 16)); 
+    padding-bottom: calc(100% / var(--number-squares, 16)); /* Mantener relación de aspecto 1:1 */
+}
+#buttonContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5%;
+    padding: 2%;
+}
+button {
+    padding: 10px;
+}
