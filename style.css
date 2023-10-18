@@ -6,6 +6,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100%;
+    flex-wrap: wrap;
 }
 #container {
     display: flex;
@@ -17,13 +19,56 @@
     flex: 1 0 calc(100% / var(--number-squares, 16)); 
     padding-bottom: calc(100% / var(--number-squares, 16)); /* Mantener relación de aspecto 1:1 */
 }
-#buttonContainer {
+#buttonContainer, #BackToNormalContainer {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 5%;
-    padding: 2%;
+    flex-wrap: wrap;
 }
 button {
-    padding: 10px;
+    border-radius: 10px;
+    background-color: aliceblue;
+}
+#BackToNormalContainer, #LeftContainer {
+    width: 30%;
+}
+
+
+#BackToNormalContainer {
+    padding: 1% 2% 2%;
+
+}
+
+#buttonContainer button {
+    padding: 1%;
+    height: 50px;
+    margin: 10px;
+}
+#BackToNormalContainer button {
+    padding: 4%;
+    margin: 5%;
+}
+.TransparencyButton {
+    font-size: 150%;
+    padding: 2% 0;
+    width: 40px;
+    margin: 5%;
+}
+.TransparencyContainer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+#DarkerModeContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.Desactive {
+    display: none;
+}
+.TextChange-back {
+    display: block;
 }
