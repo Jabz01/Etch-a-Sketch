@@ -112,9 +112,9 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     //if ColorCase is equal to 0 this function would "paint" the Grid to black
-    function ColorBlack() {
+    function KindOfColor(RGBA) {
         if(draw && event.target.classList.contains("divChildGrid")) {
-            event.target.style.backgroundColor = `rgba(0, 0, 0, ${TransparencyNumber})`;
+            event.target.style.backgroundColor = RGBA;
         };
     };
 
@@ -186,6 +186,8 @@ document.addEventListener("DOMContentLoaded", () => {
             AddOrDesactiveClass();
         });
         
+
+
         // If the user clicks "EraserButton", it sets the ColorCase var
         // set the background of each DivChildGrid to white if the user
         // do a mousedown. Immediately the button changes to a "ColorModeButton"
@@ -195,6 +197,8 @@ document.addEventListener("DOMContentLoaded", () => {
             ButtonClicked = "EraserButton";
             AddOrDesactiveClass();
         });
+
+
 
 
         // the CSS propierties transform and transition to change the 
@@ -249,16 +253,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     PARENT.addEventListener("mousemove", (event) => {
         if (ColorCase == "Black") {   
-            ColorBlack();
+            KindOfColor(`rgba(0,0,0,${TransparencyNumber})`);
 
-            }else if(ColorCase == "RainbowColor") {
-                if(draw && event.target.classList.contains("divChildGrid")) {
-                    color = randomRGB();
-                    event.target.style.backgroundColor = color;
-                };
-                    } else if (ColorCase == "Eraser" && draw) {
-                        event.target.style.backgroundColor = "#fff"
+        }else if(ColorCase == "RainbowColor") {
+                    if(draw && event.target.classList.contains("divChildGrid")) {
+                        color = randomRGB();
+                        KindOfColor(color);
                     };
+                } else if (ColorCase == "Eraser" && draw) {
+                        KindOfColor("#fff")
+                        } else if (ColorCase == "Darker") {
+                            KindOfColor
+                        } ;
     });
     
 
