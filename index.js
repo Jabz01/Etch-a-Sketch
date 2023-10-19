@@ -12,6 +12,9 @@ document.addEventListener("DOMContentLoaded", () => {
     let ColorCase = "Black";
     let TransparencyNumber = 1; 
     let ButtonClicked = ""; //Var to know what classes add or remove in accordance of what
+    let Color = ""
+    const TransparencyLevels = { Cell: 0};
+    let DarkerActive = "";
     //button was clicked.
 
 
@@ -60,9 +63,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     //Darker game button
-    const DarkerPoint = document.createElement("button");
-    DarkerPoint.textContent = "Darker mode";
-    DARKER_MODE_CONTAINER.appendChild(DarkerPoint);
+    const DarkerButton = document.createElement("button");
+    DarkerButton.textContent = "Darker mode";
+    DARKER_MODE_CONTAINER.appendChild(DarkerButton);
 
     // FUNCTIONS ---------------------------------------------------------
 
@@ -111,12 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-    //if ColorCase is equal to 0 this function would "paint" the Grid to black
-    function KindOfColor(RGBA) {
-        if(draw && event.target.classList.contains("divChildGrid")) {
-            event.target.style.backgroundColor = RGBA;
-        };
-    };
+ 
 
     //Function how respond if user click in the button to reduce the 
     //transparency and viciverse
@@ -132,7 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     //using the methods "round" and "random" in the object math create 
     //a random rgba number
-    function randomRGB() {
+    function randomRGB(alpha) {
         const o = Math.round;
         const r = Math.random;
         const s = 255;
@@ -140,7 +138,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const red = o(r() * s);
         const green = o(r() * s);
         const blue = o(r() * s);
-        const alpha = TransparencyNumber;
     
         return `rgba(${red}, ${green}, ${blue}, ${alpha})`;        
     };
@@ -152,8 +149,17 @@ document.addEventListener("DOMContentLoaded", () => {
         if(ButtonClicked === "ClearOrReturnToBlackButton") {
             EraserButton.classList.remove("Desactive");
             EraserButton.classList.add("TextChange-back");
-            ReturnToBlackButton.classList.remove("TextChange-back")
+
+            RandomizeButton.classList.remove("Desactive");
+            RandomizeButton.classList.add("TextChange-back");
+
+            ReturnToBlackButton.classList.remove("TextChange-back");
             ReturnToBlackButton.classList.add("Desactive");
+
+            DarkerButton.classList.remove("Desactive");
+            DarkerButton.classList.add("TextChange-back");
+
+            DarkerActive = "none"
 
         } else if (ButtonClicked === "EraserButton") {
             EraserButton.classList.remove("TextChange-back");
@@ -161,16 +167,41 @@ document.addEventListener("DOMContentLoaded", () => {
             ReturnToBlackButton.classList.remove("Desactive");
             ReturnToBlackButton.classList.add("TextChange-back");
 
+            DarkerActive = "none";
+
         } else if (ButtonClicked === "RandomizeButton") {
             ReturnToBlackButton.classList.add("TextChange-back");
             ReturnToBlackButton.classList.remove("Desactive");
+
             EraserButton.classList.add("TextChange-back");
+            
+            RandomizeButton.classList.remove("TextChange-back");
+            RandomizeButton.classList.add("Desactive")
+            
+        } else if (ButtonClicked === "DarkerButton") {
+            DarkerButton.classList.remove("TextChange-back")
+            DarkerButton.classList.add("Desactive");
+            ReturnToBlackButton.classList.add("TextChange-back");
+            ReturnToBlackButton.classList.remove("Desactive");
         }
     };
 
-    function AddtransparencyGradually() {
-        
+    function DecidePen() {
+        if (ColorCase == "Black") {
+            Color = `rgba(0,0,0,${TransparencyNumber})`
+            } else if (ColorCase == "Eraser") {
+                    Color = "#fff"
+                } else if (ColorCase == "RainbowColor") {
+                        Color = randomRGB(TransparencyNumber);
+                    };
+        return Color; 
     }
+    
+    function DarkenCellTransparency(Cell) {
+        if (TransparencyLevels[Cell] < 1) {
+            TransparencyLevels[Cell] += 0.0125;
+        };
+    };
 
     // NO MORE FUNCTIONS!!!! --------------------------------------------
 
@@ -184,6 +215,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ColorCase = "Black";
             ButtonClicked = "ClearOrReturnToBlackButton";
             AddOrDesactiveClass();
+            TransparencyNumber = 1;
         });
         
 
@@ -225,12 +257,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
 
-
-
-
-    
-
-        TRANSPARENCY_CONTAINER.addEventListener("click", (event) => {
+        DarkerButton.addEventListener("click", (event) => {
             if(event.target === LessTransparencyButton && TransparencyNumber <= 0.10) {
                 alert("The transparency is already 0, you cant substrac anymore.");
             }else if (event.target === MoreTransparencyButton && TransparencyNumber == 1){
@@ -240,34 +267,42 @@ document.addEventListener("DOMContentLoaded", () => {
             };
         });
 
+        DARKER_MODE_CONTAINER.addEventListener("click", () => {
+            DarkerActive = "YES";
+            AddOrDesactiveClass();
+        });
+
     
 
     // Mouse movement ---------------------------------------------------
 
     PARENT.addEventListener("mousedown", () => {
         draw = true;
+
     });
     PARENT.addEventListener("mouseup", () => {
         draw = false;
     });
 
     PARENT.addEventListener("mousemove", (event) => {
-        if (ColorCase == "Black") {   
-            KindOfColor(`rgba(0,0,0,${TransparencyNumber})`);
 
-        }else if(ColorCase == "RainbowColor") {
-                    if(draw && event.target.classList.contains("divChildGrid")) {
-                        color = randomRGB();
-                        KindOfColor(color);
-                    };
-                } else if (ColorCase == "Eraser" && draw) {
-                        KindOfColor("#fff")
-                        } else if (ColorCase == "Darker") {
-                            KindOfColor
-                        } ;
+        if(draw && event.target.classList.contains("divChildGrid")) {
+            const Cell = "Cell";
+
+    
+            DecidePen();
+            event.target.style.backgroundColor = Color;
+
+            if (DarkerActive == "YES") {
+                DarkenCellTransparency(Cell);
+                event.target.style.backgroundColor = `rgba(0,0,0, ${TransparencyLevels[Cell]})`;
+                console.log(TransparencyLevels[Cell]);
+            }
+
+        };
+            
     });
     
-
 
 
 });
