@@ -5,16 +5,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const BACK_CONTAINER = document.querySelector("#BackToNormalContainer");
     const TRANSPARENCY_CONTAINER = document.querySelector(".TransparencyContainer");
     const DARKER_MODE_CONTAINER = document.querySelector("#DarkerModeContainer");
-   
+    const BODY = document.querySelector("body");
+
     // Vars for the events of draw and the default worth of the grid, respectively.
     let draw = false;
     let numberOfSquares = 16; //Default number of the grid
     let ColorCase = "Black";
     let TransparencyNumber = 1; 
-    let ButtonClicked = ""; //Var to know what classes add or remove in accordance of what
+    let ButtonClicked = "Black"; //Var to know what classes add or remove in accordance of what
     let Color = ""
-    const TransparencyLevels = { Cell: 0};
-    let DarkerActive = "";
+    let DarkerActive = "none";
+    const CellTransparency = new Map();
     //button was clicked.
 
 
@@ -56,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
     MoreTransparencyButton.textContent = "+";
     MoreTransparencyButton.classList.add("TransparencyButton");
     const transparencyText = document.createElement("h5");
-    transparencyText.textContent = "TRANSPARENCY";
+    transparencyText.textContent = `Transparency level: ${TransparencyNumber.toFixed(1)}`;
     TRANSPARENCY_CONTAINER.appendChild(LessTransparencyButton);
     TRANSPARENCY_CONTAINER.appendChild(transparencyText);
     TRANSPARENCY_CONTAINER.appendChild(MoreTransparencyButton);
@@ -125,6 +126,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }else if (event.target === MoreTransparencyButton) {
             TransparencyNumber += 0.10;
         };
+        CellTransparency.forEach((_, Cell) => {
+            CellTransparency.set(Cell, TransparencyNumber);
+        });
         return TransparencyNumber;
     };
 
@@ -164,10 +168,15 @@ document.addEventListener("DOMContentLoaded", () => {
         } else if (ButtonClicked === "EraserButton") {
             EraserButton.classList.remove("TextChange-back");
             EraserButton.classList.add("Desactive");
+
             ReturnToBlackButton.classList.remove("Desactive");
             ReturnToBlackButton.classList.add("TextChange-back");
 
+            DarkerButton.classList.remove("TextChange-back")
+            DarkerButton.classList.add("Desactive");
+
             DarkerActive = "none";
+
 
         } else if (ButtonClicked === "RandomizeButton") {
             ReturnToBlackButton.classList.add("TextChange-back");
@@ -186,20 +195,29 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-    function DecidePen() {
+    function DecidePen(Transparency) {
         if (ColorCase == "Black") {
-            Color = `rgba(0,0,0,${TransparencyNumber})`
+            Color = `rgba(0,0,0,${Transparency})`;
             } else if (ColorCase == "Eraser") {
-                    Color = "#fff"
+                    Color = `rgba(255,255,255,${Transparency}`;
                 } else if (ColorCase == "RainbowColor") {
-                        Color = randomRGB(TransparencyNumber);
+                        Color = randomRGB(Transparency);
                     };
         return Color; 
     }
     
+    function IniatilizeTransparency(Cell) {
+        if (!CellTransparency.has(Cell)) {
+            CellTransparency.set(Cell, TransparencyNumber);
+        };
+    };
+
     function DarkenCellTransparency(Cell) {
-        if (TransparencyLevels[Cell] < 1) {
-            TransparencyLevels[Cell] += 0.0125;
+
+        if (CellTransparency.get(Cell) < 1) {
+            const NewTransparency = Math.min(CellTransparency.get(Cell) + 0.050, 1)
+            CellTransparency.set(Cell, NewTransparency);
+
         };
     };
 
@@ -216,6 +234,9 @@ document.addEventListener("DOMContentLoaded", () => {
             ButtonClicked = "ClearOrReturnToBlackButton";
             AddOrDesactiveClass();
             TransparencyNumber = 1;
+            CellTransparency.forEach((_, Cell) => {
+                CellTransparency.set(Cell, 1);
+            });
         });
         
 
@@ -228,8 +249,11 @@ document.addEventListener("DOMContentLoaded", () => {
             ColorCase = "Eraser";
             ButtonClicked = "EraserButton";
             AddOrDesactiveClass();
+            TransparencyNumber = 0;
+            CellTransparency.forEach((_,Cell) => {
+                CellTransparency.set(Cell, 0)
+            })
         });
-
 
 
 
@@ -240,6 +264,10 @@ document.addEventListener("DOMContentLoaded", () => {
             ButtonClicked = "ClearOrReturnToBlackButton";
             TransparencyNumber = 1;
             AddOrDesactiveClass();
+
+            CellTransparency.forEach((_, Cell) => {
+                CellTransparency.set(Cell, 1);
+            });
         });
         
         // Logic of the button "GridChange" to change the size of the grid.
@@ -257,7 +285,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
 
-        DarkerButton.addEventListener("click", (event) => {
+        TRANSPARENCY_CONTAINER.addEventListener("click", (event) => {
             if(event.target === LessTransparencyButton && TransparencyNumber <= 0.10) {
                 alert("The transparency is already 0, you cant substrac anymore.");
             }else if (event.target === MoreTransparencyButton && TransparencyNumber == 1){
@@ -269,35 +297,49 @@ document.addEventListener("DOMContentLoaded", () => {
 
         DARKER_MODE_CONTAINER.addEventListener("click", () => {
             DarkerActive = "YES";
+            ButtonClicked = "DarkerButton";
             AddOrDesactiveClass();
+            TransparencyNumber = 0;
+            CellTransparency.forEach((_, Cell) => {
+                CellTransparency.set(Cell, 0);
+            });
         });
 
-    
 
     // Mouse movement ---------------------------------------------------
 
+    BODY.addEventListener("click", (event) => {
+        if (event.target.tagName === "BUTTON") {
+            transparencyText.textContent = `Transparency level: ${TransparencyNumber.toFixed(1)}`
+        }
+    });
+
     PARENT.addEventListener("mousedown", () => {
         draw = true;
-
     });
     PARENT.addEventListener("mouseup", () => {
         draw = false;
     });
 
-    PARENT.addEventListener("mousemove", (event) => {
+    PARENT.addEventListener("mouseover", (event) => {
 
         if(draw && event.target.classList.contains("divChildGrid")) {
-            const Cell = "Cell";
+            const Cell = event.target;
+            IniatilizeTransparency(Cell); // Inicialize the transparency if
+            //if is the first time that the user move in the Cell.
 
-    
-            DecidePen();
-            event.target.style.backgroundColor = Color;
-
-            if (DarkerActive == "YES") {
+            if (DarkerActive == "none") {
+                DecidePen(CellTransparency.get(Cell));
+                Cell.style.backgroundColor = Color;
+                
+            } else if (DarkerActive == "YES") {
+                
                 DarkenCellTransparency(Cell);
-                event.target.style.backgroundColor = `rgba(0,0,0, ${TransparencyLevels[Cell]})`;
-                console.log(TransparencyLevels[Cell]);
+                DecidePen(CellTransparency.get(Cell));
+                Cell.style.backgroundColor = Color;
             }
+            
+
 
         };
             
