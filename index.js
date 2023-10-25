@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     // get the HTML elements.
-    const PARENT = document.querySelector("#container");
+    const GRID_CONTAINER = document.querySelector("#container");
     const BUTTON_CONTAINER = document.querySelector("#buttonContainer");
     const BACK_CONTAINER = document.querySelector("#BackToNormalContainer");
     const TRANSPARENCY_CONTAINER = document.querySelector(".TransparencyContainer");
@@ -28,13 +28,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     //Button to eraser in the grid
     const EraserButton = document.createElement("button");
-    EraserButton.textContent = "ERASER";
+    EraserButton.innerHTML = '<i class="fa-light fa-eraser fa-sm"></i>ERASER';
     BUTTON_CONTAINER.appendChild(EraserButton);
     
     //Button to return to the black color in the grid
     const ReturnToBlackButton = document.createElement("button");
-    ReturnToBlackButton.textContent = "BACK TO BLACK";
+    ReturnToBlackButton.innerHTML = '<i class="fa-sharp fa-solid fa-pen"></i> BACK TO BLACK';
     ReturnToBlackButton.classList.add("Desactive");
+    ReturnToBlackButton.classList.add("ReturnToBlack");
     BACK_CONTAINER.appendChild(ReturnToBlackButton);
 
 
@@ -75,16 +76,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     //a function that use a bucle for to create a grid (by default 16*16)
     function createGrid() {
-        PARENT.innerHTML = '';
+        GRID_CONTAINER.innerHTML = '';
         
         for(i=1; i<= numberOfSquares*numberOfSquares; i++) {
             const DIV_CREATOR = document.createElement("div");
             DIV_CREATOR.classList.add("divChildGrid");
-            PARENT.appendChild(DIV_CREATOR);    
+            GRID_CONTAINER.appendChild(DIV_CREATOR);    
         };
 
         // Put the number of grid for each row and column in the container
-        PARENT.style.setProperty('--number-squares', numberOfSquares)
+        GRID_CONTAINER.style.setProperty('--number-squares', numberOfSquares)
     }
     createGrid();
 
@@ -186,6 +187,9 @@ document.addEventListener("DOMContentLoaded", () => {
             
             RandomizeButton.classList.remove("TextChange-back");
             RandomizeButton.classList.add("Desactive")
+
+            DarkerButton.classList.remove("Desactive")
+            DarkerButton.classList.add("TextChange-back")
             
         } else if (ButtonClicked === "DarkerButton") {
             DarkerButton.classList.remove("TextChange-back")
@@ -199,7 +203,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (ColorCase == "Black") {
             Color = `rgba(0,0,0,${Transparency})`;
             } else if (ColorCase == "Eraser") {
-                    Color = `rgba(255,255,255,${Transparency}`;
+                    Color = `rgba(255,255,255,${Transparency})`;
                 } else if (ColorCase == "RainbowColor") {
                         Color = randomRGB(Transparency);
                     };
@@ -215,12 +219,32 @@ document.addEventListener("DOMContentLoaded", () => {
     function DarkenCellTransparency(Cell) {
 
         if (CellTransparency.get(Cell) < 1) {
-            const NewTransparency = Math.min(CellTransparency.get(Cell) + 0.050, 1)
+            const NewTransparency = Math.min(CellTransparency.get(Cell) + 0.0250, 1)
             CellTransparency.set(Cell, NewTransparency);
 
         };
     };
 
+    function PEN(event) {
+        if(draw && event.target.classList.contains("divChildGrid")) {
+            const Cell = event.target;
+            IniatilizeTransparency(Cell); // Inicialize the transparency if
+            //if is the first time that the user move in the Cell.
+
+            if (DarkerActive == "none") {
+                DecidePen(CellTransparency.get(Cell));
+                Cell.style.backgroundColor = Color;
+                
+            } else if (DarkerActive == "YES") {
+                
+                DarkenCellTransparency(Cell);
+                DecidePen(CellTransparency.get(Cell));
+                Cell.style.backgroundColor = Color;
+            };
+
+
+        };
+    }
     // NO MORE FUNCTIONS!!!! --------------------------------------------
 
 
@@ -314,36 +338,18 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    PARENT.addEventListener("mousedown", () => {
+    GRID_CONTAINER.addEventListener("mousedown", (event) => {
         draw = true;
+        PEN(event);
     });
-    PARENT.addEventListener("mouseup", () => {
+    GRID_CONTAINER.addEventListener("mouseup", () => {
         draw = false;
     });
 
-    PARENT.addEventListener("mouseover", (event) => {
-
-        if(draw && event.target.classList.contains("divChildGrid")) {
-            const Cell = event.target;
-            IniatilizeTransparency(Cell); // Inicialize the transparency if
-            //if is the first time that the user move in the Cell.
-
-            if (DarkerActive == "none") {
-                DecidePen(CellTransparency.get(Cell));
-                Cell.style.backgroundColor = Color;
-                
-            } else if (DarkerActive == "YES") {
-                
-                DarkenCellTransparency(Cell);
-                DecidePen(CellTransparency.get(Cell));
-                Cell.style.backgroundColor = Color;
-            }
-            
-
-
-        };
-            
+    GRID_CONTAINER.addEventListener("mouseover", (event) => {
+        PEN(event);
     });
+
     
 
 
