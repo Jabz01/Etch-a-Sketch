@@ -1,7 +1,17 @@
+@font-face {
+    font-family: "OPEN_SANS";
+    src: url(./fuentes/OpenSans/OpenSans-VariableFont_wdth\,wght.ttf);
+}
 * {
     box-sizing: border-box;
     margin: 0;
 }
+
+.fa-sharp {
+    font-size: 30px;
+}
+
+
 #containerFather {
     display: flex;
     align-items: center;
@@ -12,13 +22,18 @@
 #container {
     display: flex;
     flex-wrap: wrap;
-    border: 3px solid black;
     width: 40%;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
+
+
+
 .divChildGrid {
     flex: 1 0 calc(100% / var(--number-squares, 16)); 
     padding-bottom: calc(100% / var(--number-squares, 16)); /* Mantener relación de aspecto 1:1 */
+    transition: background-color 0.4s ease-out;
 }
+
 #buttonContainer, #BackToNormalContainer {
     display: flex;
     justify-content: center;
@@ -27,12 +42,21 @@
 }
 button {
     border-radius: 10px;
-    background-color: aliceblue;
+    background-color: #fff;
+    box-shadow: rgba(0, 0, 0, 0.24) 3px 0px 8px;
+    border: none;
+    cursor: pointer;
 }
+#buttonContainer button, #BackToNormalContainer button, #DarkerModeContainer button {
+    font-family: "OPEN_SANS";
+    font-weight: 600;
+    font-size: 15px;
+}
+
+
 #BackToNormalContainer, #LeftContainer {
     width: 30%;
 }
-
 
 #BackToNormalContainer {
     padding: 1% 2% 2%;
@@ -40,19 +64,24 @@ button {
 }
 
 #buttonContainer button {
-    padding: 1%;
     height: 50px;
     margin: 10px;
 }
+
 #BackToNormalContainer button {
-    padding: 4%;
-    margin: 5%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px 10px;
+    margin: 10px 20px;
+    gap: 10px;
 }
+
 .TransparencyButton {
     font-size: 150%;
     padding: 2% 0;
     width: 40px;
-    margin: 5%;
+    margin: 10px;
 }
 .TransparencyContainer {
     display: flex;
@@ -61,11 +90,19 @@ button {
     justify-content: center;
     flex-direction: column;
 }
+.TransparencyContainer h5 {
+    font-size: 20px;
+}
 #DarkerModeContainer {
     display: flex;
     align-items: center;
     justify-content: center;
 }
+
+#DarkerModeContainer button {
+    padding: 10px;
+}
+
 .Desactive {
     display: none;
 }
